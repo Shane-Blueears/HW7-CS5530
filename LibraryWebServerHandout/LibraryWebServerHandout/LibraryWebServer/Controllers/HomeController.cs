@@ -32,8 +32,24 @@ namespace LibraryWebServer.Controllers
     {
       // TODO: Fill in. Determine if login is successful or not.
       bool loginSuccessful = false;
+            using (Team69LibraryContext db = new Team69LibraryContext())
+            {
+                var query =
+                from p in db.Patrons
+                select p;
 
-      if(!loginSuccessful)
+                foreach (var v in query)
+                {
+                    if(name.Equals(v.Name)&& cardnum == v.CardNum)
+                    {
+                        loginSuccessful = true;
+                    }
+                    //System.Diagnostics.Debug.WriteLine(v.CardNum);
+                    //System.Diagnostics.Debug.WriteLine(v.Name);
+                }
+            }
+
+            if (!loginSuccessful)
       {
         return Json(new { success = false });
       }
