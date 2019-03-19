@@ -100,25 +100,25 @@ namespace LibraryWebServer.Controllers
                     select new
                     {
                         title.Title,
-                        Serial = from inven in db.Inventory where inven.Isbn == title.Isbn
-                                  select inven.Serial,
-                        ISBN = from inven in db.Inventory where inven.Isbn == title.Isbn 
-                               select inven.Isbn,
                         title.Author,
-                        Holder = from checkO in db.CheckedOut join patr in db.Patrons on checkO.CardNum equals patr.CardNum
-                                 join In
+                        title.Isbn,
+                        Serial = from inven in db.Inventory where title.Isbn == inven.Isbn
+                                 select inven.Serial,
+                        //Serial = from inven in db.Inventory where inven.Isbn == title.Isbn
+                        //         select inven.Serial,
+                        //Holder = from 
+                        //title.Title,
+                        //Serial = from inven in db.Inventory where inven.Isbn == title.Isbn
+                        //          select inven.Serial,
+                        //ISBN = from inven in db.Inventory where inven.Isbn == title.Isbn 
+                        //       select inven.Isbn,
+                        //title.Author,
+                        Holder = from inven in db.Inventory where title.Isbn == inven.Isbn
+                                 join checkO in db.CheckedOut on inven.Serial equals checkO.Serial
+                                 join patr in db.Patrons on checkO.CardNum equals patr.CardNum
                                  select patr.Name
                     };
-                foreach(var book in query)
-                {
-                    if (book.ISBN.Equals(""))
-                    {
-                        var findISBN =
-                            from title in db.Titles
-                            where title.Title == book.Title
-                            select title.Isbn;
-                    }
-                }
+                String a = "";
                 return Json(query.ToArray());
             }
       
