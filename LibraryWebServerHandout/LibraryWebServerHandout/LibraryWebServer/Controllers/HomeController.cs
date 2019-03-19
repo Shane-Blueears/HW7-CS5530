@@ -173,12 +173,23 @@ namespace LibraryWebServer.Controllers
         public ActionResult CheckOutBook(int serial)
         {
             // You may have to cast serial to a (uint)
+            using (Team69LibraryContext db = new Team69LibraryContext())
+            {
+                CheckedOut book = new CheckedOut
+                {
+                    CardNum = (uint)card,
+                    Serial = (uint)serial
 
+                };
 
+                db.CheckedOut.Add(book);
+                db.SaveChanges();
+        
+            }
             return Json(new { success = true });
         }
 
-
+        
         /// <summary>
         /// Returns a book currently checked out by the logged in user (global variable "card").
         /// In other words, removes a row from the CheckedOut table.
