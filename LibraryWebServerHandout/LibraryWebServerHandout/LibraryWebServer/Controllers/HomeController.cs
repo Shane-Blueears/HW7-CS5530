@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using LibraryWebServer;
 using LibraryWebServer.Models;
+using System.Globalization;
 
 namespace LibraryWebServer.Controllers
 {
@@ -38,9 +39,11 @@ namespace LibraryWebServer.Controllers
                 from p in db.Patrons
                 select p;
 
+                String userName = name;
+                userName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(userName.ToLower());
                 foreach (var v in query)
                 {
-                    if(name.Equals(v.Name)&& cardnum == v.CardNum)
+                    if (userName.Equals(v.Name)&& cardnum == v.CardNum)
                     {
                         loginSuccessful = true;
                     }
@@ -89,9 +92,38 @@ namespace LibraryWebServer.Controllers
     {
 
       // TODO: Implement 
+      //Question: Do I have to combine Serial or not?
+      using(Team69LibraryContext db = new Team69LibraryContext())
+            {
+                var query =
+                    from title in db.Titles 
+                    select new
+                    {
+                        title.Title,
+                        Serial = from inven in db.Inventory where inven.Isbn == title.Isbn
+                                  select inven.Serial,
+                        ISBN = from inven in db.Inventory where inven.Isbn == title.Isbn 
+                               select inven.Isbn,
+                        title.Author,
+                        Holder = from checkO in db.CheckedOut join patr in db.Patrons on checkO.CardNum equals patr.CardNum
+                                 join In
+                                 select patr.Name
+                    };
+                foreach(var book in query)
+                {
+                    if (book.ISBN.Equals(""))
+                    {
+                        var findISBN =
+                            from title in db.Titles
+                            where title.Title == book.Title
+                            select title.Isbn;
+                    }
+                }
+                return Json(query.ToArray());
+            }
       
       
-      return Json(null);
+      //eturn Json(null);
 
     }
 
