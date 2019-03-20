@@ -90,33 +90,27 @@ namespace LibraryWebServer.Controllers
         [HttpPost]
         public ActionResult AllTitles()
         {
-
-      // TODO: Implement 
-      //Question: Do I have to combine Serial or not?
       using(Team69LibraryContext db = new Team69LibraryContext())
             {
                 var query =
-                    from title in db.Titles 
+                    from title in db.Titles
+                    join inven in db.Inventory on title.Isbn equals inven.Isbn into tempTable
+                    from tTable in tempTable.DefaultIfEmpty()
+
+                    //from anotherTitle in db.Titles
+                    //join inventory in db.Inventory on anotherTitle.Isbn equals inventory.Isbn
+                    //join checkedO in db.CheckedOut on inventory.Serial equals checkedO.Serial
+                    //join patr in db.Patrons on checkedO.CardNum equals patr.CardNum into tempTable2
+                    //from tTable2 in tempTable2.DefaultIfEmpty()
+
                     select new
                     {
                         title.Title,
                         title.Author,
                         title.Isbn,
-                        Serial = from inven in db.Inventory where title.Isbn == inven.Isbn
-                                 select inven.Serial,
-                        //Serial = from inven in db.Inventory where inven.Isbn == title.Isbn
-                        //         select inven.Serial,
-                        //Holder = from 
-                        //title.Title,
-                        //Serial = from inven in db.Inventory where inven.Isbn == title.Isbn
-                        //          select inven.Serial,
-                        //ISBN = from inven in db.Inventory where inven.Isbn == title.Isbn 
-                        //       select inven.Isbn,
-                        //title.Author,
-                        Holder = from inven in db.Inventory where title.Isbn == inven.Isbn
-                                 join checkO in db.CheckedOut on inven.Serial equals checkO.Serial
-                                 join patr in db.Patrons on checkO.CardNum equals patr.CardNum
-                                 select patr.Name
+                        Serial = (tTable == null ? (uint?)null : tTable.Serial),
+                        //name = (tTable2 == null ? "" : tTable2.Name)
+
                     };
                 String a = "";
                 return Json(query.ToArray());
