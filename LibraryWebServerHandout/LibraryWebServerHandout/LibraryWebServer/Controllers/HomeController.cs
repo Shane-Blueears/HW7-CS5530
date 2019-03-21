@@ -194,6 +194,16 @@ namespace LibraryWebServer.Controllers
         public ActionResult ReturnBook(int serial)
         {
             // You may have to cast serial to a (uint)
+            using(Team69LibraryContext db = new Team69LibraryContext())
+            {
+                CheckedOut book = new CheckedOut
+                {
+                    CardNum = (uint)card,
+                    Serial = (uint)serial
+                };
+                db.CheckedOut.Remove(book);
+                db.SaveChanges();
+            }
 
             return Json(new { success = true });
         }
