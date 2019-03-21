@@ -99,9 +99,11 @@ namespace LibraryWebServer.Controllers
 
                     //from anotherTitle in db.Titles
                     //join inventory in db.Inventory on anotherTitle.Isbn equals inventory.Isbn
-                    //join checkedO in db.CheckedOut on inventory.Serial equals checkedO.Serial
-                    //join patr in db.Patrons on checkedO.CardNum equals patr.CardNum into tempTable2
-                    //from tTable2 in tempTable2.DefaultIfEmpty()
+                    join checkedO in db.CheckedOut on tTable.Serial equals checkedO.Serial into tempTable2
+                    from tTable2 in tempTable2.DefaultIfEmpty()
+
+                    join patr in db.Patrons on tTable2.CardNum equals patr.CardNum into tempTable3
+                    from tTable3 in tempTable3.DefaultIfEmpty()
 
                     select new
                     {
@@ -109,15 +111,12 @@ namespace LibraryWebServer.Controllers
                         title.Author,
                         title.Isbn,
                         Serial = (tTable == null ? (uint?)null : tTable.Serial),
-                        //name = (tTable2 == null ? "" : tTable2.Name)
+                        name = (tTable2 == null ? "" : tTable3.Name)
 
                     };
                 String a = "";
                 return Json(query.ToArray());
             }
-      
-      
-      //eturn Json(null);
 
         }
 
